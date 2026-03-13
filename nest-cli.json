@@ -24,9 +24,11 @@
       "root": "apps/apigateway",
       "entryFile": "main",
       "sourceRoot": "apps/apigateway/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/apigateway/tsconfig.app.json"
-      }
+       "compilerOptions": {
+    "webpack": true,
+    "webpackConfigPath": "webpack.config.js",
+    "tsConfigPath": "apps/users/tsconfig.app.json"
+  }
     }
   }
 }
