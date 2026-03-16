@@ -60,3 +60,13 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 /generated/prisma
 
 /generated/prisma
+
+
+prisma/generated/
+generated/
+
+# Also ignore wasm and compiled prisma files
+*.wasm
+query_compiler_fast_bg*
+wasm-edge-light-loader.mjs
+wasm-worker-loader.mjs
