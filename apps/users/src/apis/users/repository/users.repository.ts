@@ -16,11 +16,19 @@ export class UsersRepository {
       },
     });
 
-    return  user;
+    return user;
   }
 
   async viewProfile(id: string) {
     return await this.prisma.user.findUnique({ where: { id } });
+  }
+
+  async findByEmail(email: string) {
+    return await this.prisma.user.findUnique({ where: { email } });
+  }
+
+  async findByPhoneNumber(phoneNumber: string) {
+    return await this.prisma.user.findUnique({ where: { phoneNumber } });
   }
 
   async findAll() {

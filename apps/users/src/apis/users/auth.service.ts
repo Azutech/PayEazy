@@ -1,21 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create.dto';
+import { UsersRepository } from './repository/users.repository';
 
 @Injectable()
 export class AuthService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(private readonly usersRepository: UsersRepository) {}
+  async addUser(createUserDto: CreateUserDto) {
+    const [findUserByEmail, findUserByPhoneNumber] = await Promise.all([
+      this.usersRepository.findByEmail(createUserDto.email),
+      this.usersRepository.findByPhoneNumber(createUserDto.phoneNumber),
+    ]);
+
+    if (findUserByEmail || findUserByPhoneNumber) {
+      throw new Error('User already exists');
+    }
+
+    const user = await this.usersRepository.create(createUserDto);
+    return user;
   }
 
   findAll() {
     return `This action returns all users`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
