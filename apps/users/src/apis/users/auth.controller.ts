@@ -1,12 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @MessagePattern('createUser')
   create(@Payload() createUserDto: CreateUserDto) {
@@ -23,10 +22,7 @@ export class AuthController {
     return this.authService.findOne(id);
   }
 
-  @MessagePattern('updateUser')
-  update(@Payload() updateUserDto: UpdateUserDto) {
-    return this.authService.update(updateUserDto.id, updateUserDto);
-  }
+
 
   @MessagePattern('removeUser')
   remove(@Payload() id: number) {

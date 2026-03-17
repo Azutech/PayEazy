@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './users/auth.module';
+import { AuthModule } from './apis/users/auth.module';
 import { DatabaseModule } from '../../../libs/database/src/prisma.module';
 
 @Module({
