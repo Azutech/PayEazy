@@ -7,12 +7,12 @@ message User {
     string name = 2;
     string email = 3;
     string password = 4;
-    string phone = 5;
-    string address = 6;
-    string city = 7;
-    string state = 8;
-    string zip = 9;
-    string country = 10;
-    string created_at = 11;
-    string updated_at = 12;
+    string phoneNumber = 5;
+    string avatar = 6;
+    string dateOfBirth = 7;
+    string sex = 8;
+    string firstName = 9;
+    string lastName = 10;
+    string createdAt = 11;
+    string updatedAt = 12;
 }

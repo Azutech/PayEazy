@@ -8,11 +8,13 @@ datasource db {
 
 model User {
   id              String   @id @default(uuid())
-  firstName       String
-  lastName        String
+  firstName       String?
+  lastName        String?
   email           String   @unique
-  dateOfBirth     DateTime
-  sex             String
+  password        String   
+  dateOfBirth     DateTime?
+  sex             String?
+  avatar          String?
   phoneNumber     String   @unique
   isActive        Boolean  @default(false)
   verified        Boolean  @default(false)

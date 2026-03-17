@@ -5,7 +5,7 @@ import { CreateUserDto } from './dto/create.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @MessagePattern('createUser')
   create(@Payload() createUserDto: CreateUserDto) {
@@ -21,8 +21,6 @@ export class AuthController {
   findOne(@Payload() id: number) {
     return this.authService.findOne(id);
   }
-
-
 
   @MessagePattern('removeUser')
   remove(@Payload() id: number) {
