@@ -13,6 +13,7 @@ export class UsersRepository {
         email: data.email,
         password: data.password,
         phoneNumber: data.phoneNumber,
+    
       },
     });
 

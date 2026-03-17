@@ -27,26 +27,24 @@ export class AuthService {
     ]);
 
     if (userByEmail && userByPhone) {
-      throw new ConflictException(
-        'Both email and phone number are already registered',
-        'DUPLICATE_EMAIL_AND_PHONE',
-      );
+      throw new RpcException({
+        message: 'Both email and phone number are already registered',
+        status: HttpStatus.CONFLICT,
+      });
     }
 
     if (userByEmail) {
-      throw new ConflictException(
-        'Email is already in use',
-        'DUPLICATE_EMAIL',
-        'email',
-      );
+      throw new RpcException({
+        message: 'Email is already in use',
+        status: HttpStatus.CONFLICT,
+      });
     }
 
     if (userByPhone) {
-      throw new ConflictException(
-        'Phone number is already in use',
-        'DUPLICATE_PHONE',
-        'phoneNumber',
-      );
+      throw new RpcException({
+        message: 'Phone number is already in use',
+        status: HttpStatus.CONFLICT,
+      });
     }
 
     return this.usersRepository.create(createUserDto);
