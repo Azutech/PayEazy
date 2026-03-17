@@ -4,8 +4,11 @@ import {
   Body,
   HttpCode,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { CreateUserDto } from 'libs/dtos/user.dto';
+import type { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -13,16 +16,17 @@ export class UsersController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() body: { email: string; password: string; phoneNumber: string }) {
+  async register(@Body() body: CreateUserDto) {
     const user = await this.usersService.register(body);
-
-    return user
-
+    return user;
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
-  login(@Body() body: { email: string; password: string }) {
-    return this.usersService.login(body);
+  async login(
+    @Body() body: { email: string; password: string },
+    @Res() res: Response,
+  ) {
+    const user = await this.usersService.login(body);
+    return res.status(HttpStatus.OK).json(user);
   }
 }
