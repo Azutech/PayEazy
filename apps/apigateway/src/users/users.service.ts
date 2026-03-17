@@ -3,8 +3,8 @@ import type { ClientGrpc } from '@nestjs/microservices';
 import type { Observable } from 'rxjs';
 
 interface UserServiceGrpc {
-  CreateUser(data: any): Observable<any>;
-  FindAllUsers(data: {}): Observable<any>;
+  register(data: { email: string; password: string; phoneNumber: string }): Observable<any>;  // ✅ camelCase of proto rpc Register
+  login(data: { email: string; password: string }): Observable<any>;                          // ✅ camelCase of proto rpc Login
 }
 
 @Injectable()
@@ -17,11 +17,13 @@ export class UsersService implements OnModuleInit {
     this.userService = this.client.getService<UserServiceGrpc>('UserService');
   }
 
-  createUser(data: any) {
-    return this.userService.CreateUser(data);
+  register(data: { email: string; password: string; phoneNumber: string }) {
+
+    console.log(data, "logs")
+    return this.userService.register(data);   // ✅ camelCase
   }
 
-  findAllUsers() {
-    return this.userService.FindAllUsers({});
+  login(data: { email: string; password: string }) {
+    return this.userService.login(data);      // ✅ camelCase
   }
 }

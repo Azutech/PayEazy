@@ -7,13 +7,11 @@ import { CreateUserDto } from './dto/create.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @GrpcMethod('UserService', 'createUser')
-  create(createUserDto: CreateUserDto) {
-    return this.authService.addUser(createUserDto);
+  @GrpcMethod('UserService', 'Register')  // ✅ matches proto: rpc Register
+  async register(createUserDto: CreateUserDto) {
+    await this.authService.addUser(createUserDto); 
+    return {message: "User registered successfully", user: createUserDto}
   }
 
-  @GrpcMethod('UserService', 'findAllUsers')
-  findAll() {
-    return this.authService.findAll();
-  }
+
 }
