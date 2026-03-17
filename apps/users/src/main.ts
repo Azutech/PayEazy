@@ -3,23 +3,30 @@ import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { UsersModule } from './app.module';
-import { join } from 'path';
+import { UserProtoPath } from 'libs/common/grpc-path';
 
 async function bootstrap() {
-  const logger = new Logger('Users-Service');
-  const app = await NestFactory.create(UsersModule);
-  const configService = app.get(ConfigService);
+  const appContext = await NestFactory.createApplicationContext(UsersModule);
+  const configService = appContext.get(ConfigService);
 
   const port = configService.get<string>('USER_PORT') as string;
+  const logger = new Logger('Bootstrap');
 
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.GRPC,
-    options: {
-      package: 'user',
-      protoPath: join(__dirname, 'user.proto'),
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
+    UsersModule,
+    {
+      transport: Transport.GRPC,
+      options: {
+        package: 'user',
+        protoPath: UserProtoPath('user'),
+        url: `0.0.0.0:${port}`,
+      },
     },
-  });
+  );
 
-  await app.listen(port, () => logger.log(`App running on Port: ${port}`));
+  await appContext.close();
+  await app.listen();
+
+  logger.log(`User Microservice is listening on port ${port}`);
 }
 bootstrap();
