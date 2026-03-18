@@ -1,20 +1,9 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { hash } from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import { CreateUserDto } from '../../../../../libs/dtos/user.dto';
 import { UsersRepository } from './repository/users.repository';
 import { validatePassword } from './utils/user.utils';
-
-export class ConflictException extends RpcException {
-  constructor(message: string, code: string, field?: string) {
-    super({
-      message,
-      status: HttpStatus.CONFLICT,
-      code,
-      field,
-    });
-  }
-}
 
 @Injectable()
 export class AuthService {
@@ -48,13 +37,15 @@ export class AuthService {
       });
     }
 
-
     if (!validatePassword(password)) {
       throw new RpcException({
-        message: 'Password must be atleast 12 characters long and contain a number, a special character and an uppercase letter',
+        message:
+          'Password must be atleast 12 characters long and contain a number, a special character and an uppercase letter',
         status: HttpStatus.BAD_REQUEST,
       });
     }
+
+    const hashed = await hash(password, 8);
 
     return this.usersRepository.create(createUserDto);
   }
