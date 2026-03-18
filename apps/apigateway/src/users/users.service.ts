@@ -1,4 +1,10 @@
-import { Injectable, Inject, OnModuleInit, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  OnModuleInit,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, catchError, firstValueFrom } from 'rxjs';
 import { CreateUserDto } from 'libs/dtos/user.dto';
@@ -18,18 +24,18 @@ export class UsersService implements OnModuleInit {
     this.userService = this.client.getService<UserServiceGrpc>('UserService');
   }
 
- register(data: CreateUserDto) {
-  return firstValueFrom(
-    this.userService.register(data).pipe(
-      catchError((err) => {
-        throw new HttpException(err.details || err.message, HttpStatus.CONFLICT);
-      }),
-    ),
-  );
-}
-
-
-  
+  register(data: CreateUserDto) {
+    return firstValueFrom(
+      this.userService.register(data).pipe(
+        catchError((err) => {
+          throw new HttpException(
+            err.details || err.message,
+            HttpStatus.CONFLICT,
+          );
+        }),
+      ),
+    );
+  }
 
   login(data: { email: string; password: string }) {
     return firstValueFrom(this.userService.login(data)); // ✅ camelCase
