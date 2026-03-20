@@ -47,7 +47,14 @@ export class AuthService {
 
     const hashed = await hash(password, 8);
 
-    return this.usersRepository.create(createUserDto);
+    const newUser = {
+      email,
+      password: hashed,
+      phoneNumber,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+    };
+
+    return this.usersRepository.create(newUser);
   }
 
   findAll() {
