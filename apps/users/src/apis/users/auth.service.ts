@@ -1,7 +1,7 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import { hash } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
-import { CreateUserDto } from '../../../../../libs/dtos/user.dto';
+import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
 import { UsersRepository } from './repository/users.repository';
 import { validatePassword } from './utils/user.utils';
 
@@ -55,6 +55,25 @@ export class AuthService {
     };
 
     return this.usersRepository.create(newUser);
+  }
+
+  async loginUser(loginUserDto: LoginUserDto) {
+    const { email, password } = loginUserDto;
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+    const isPasswordValid = await compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new RpcException({
+        message: 'Invalid password',
+        status: HttpStatus.UNAUTHORIZED,
+      });
+    }
+    return user;
   }
 
   findAll() {

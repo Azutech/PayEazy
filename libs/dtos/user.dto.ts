@@ -4,3 +4,8 @@ export class CreateUserDto {
   phoneNumber: string;
   avatar?: string;
 }
+
+export class LoginUserDto {
+  email: string;
+  password: string;
+}
