@@ -22,6 +22,7 @@ model User {
   createdAt       DateTime @default(now())
 
   wallets         Wallets[] 
+  tokens          Tokens[]
 }
 
 model AuditLog {
@@ -33,6 +34,21 @@ model AuditLog {
   role           String?
   createdAt      DateTime @default(now())
 }
+
+model Tokens {
+  id        String    @id @default(uuid())
+  userId    String
+  email     String
+  code      Int?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  token     String?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([email])
+}
+
 
 
 model Wallets {

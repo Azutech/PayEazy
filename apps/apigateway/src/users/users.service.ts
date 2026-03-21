@@ -38,6 +38,15 @@ export class UsersService implements OnModuleInit {
   }
 
   login(data: { email: string; password: string }) {
-    return firstValueFrom(this.userService.login(data)); // ✅ camelCase
+    return firstValueFrom(
+      this.userService.login(data).pipe(
+        catchError((err) => {
+          throw new HttpException(
+            err.details || err.message,
+            HttpStatus.BAD_REQUEST,
+          );
+        }),
+      ),
+    ); // ✅ camelCase
   }
 }

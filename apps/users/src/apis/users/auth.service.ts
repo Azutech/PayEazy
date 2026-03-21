@@ -3,11 +3,19 @@ import { compare, hash } from 'bcrypt';
 import { RpcException } from '@nestjs/microservices';
 import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
 import { UsersRepository } from './repository/users.repository';
-import { validatePassword } from './utils/user.utils';
+import {
+  generateSecureCode,
+  getExpiresAt,
+  validatePassword,
+} from './utils/user.utils';
+import { PrismaService } from 'libs/database/src/prisma.service';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    private readonly usersRepository: UsersRepository,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async addUser(createUserDto: CreateUserDto) {
     const { email, phoneNumber, password } = createUserDto;
@@ -46,8 +54,22 @@ export class AuthService {
     }
 
     const hashed = await hash(password, 8);
+    const code = generateSecureCode();
+    const expiresAt = getExpiresAt();
 
-    const newUser = {
+    // const newUser = {
+    //   email,
+    //   password: hashed,
+    //   phoneNumber,
+    //   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+    // };
+
+    // return this.usersRepository.create(newUser);
+
+
+      try {
+      const result = await this.prisma.$transaction(async (tx) => {
+        const newUser = {
       email,
       password: hashed,
       phoneNumber,
@@ -55,7 +77,23 @@ export class AuthService {
     };
 
     return this.usersRepository.create(newUser);
+      })
+    } catch (error) {
+      
+    }
+
   }
+
+  // async verifyUser(email: string) {
+  //   const user = await this.usersRepository.findByEmail(email);
+  //   if (!user) {
+  //     throw new RpcException({
+  //       message: 'User not found',
+  //       status: HttpStatus.NOT_FOUND,
+  //     });
+  //   }
+  //   return user;
+  // }
 
   async loginUser(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;

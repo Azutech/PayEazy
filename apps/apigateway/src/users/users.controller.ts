@@ -7,7 +7,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from 'libs/dtos/user.dto';
+import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
 import type { Response } from 'express';
 
 @Controller('users')
@@ -22,10 +22,7 @@ export class UsersController {
   }
 
   @Post('login')
-  async login(
-    @Body() body: { email: string; password: string },
-    @Res() res: Response,
-  ) {
+  async login(@Body() body: LoginUserDto, @Res() res: Response) {
     const user = await this.usersService.login(body);
     return res.status(HttpStatus.OK).json(user);
   }
