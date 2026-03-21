@@ -65,9 +65,10 @@ model Wallets {
 model Account {
   id        String   @id @default(uuid())
   walletId  String
-  currency  String   // 'NGN', 'BTC', 'ETH'
+  type      String   
+  currency  String   
   balance   Decimal  @default(0)
-  address   String?  // only for crypto
+  address   String?  
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 

@@ -10,7 +10,6 @@ import {
 } from './utils/user.utils';
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { TokensRepository } from './repository/token.repository';
-import moment from 'moment';
 
 @Injectable()
 export class AuthService {
@@ -22,9 +21,11 @@ export class AuthService {
 
   async addUser(createUserDto: CreateUserDto) {
     const { email, phoneNumber, password } = createUserDto;
+
+    const normalizedPhone = this.normalizePhoneNumber(phoneNumber) as string;
     const [userByEmail, userByPhone] = await Promise.all([
       this.usersRepository.findByEmail(email),
-      this.usersRepository.findByPhoneNumber(phoneNumber),
+      this.usersRepository.findByPhoneNumber(normalizedPhone),
     ]);
 
     if (userByEmail && userByPhone) {
@@ -80,7 +81,38 @@ export class AuthService {
           },
         });
 
-        return { user, token };
+        await tx.kycProfile.create({
+          data: {
+            userId: user.id,
+            status: 'pending',
+            level: 0,
+          },
+        });
+
+        const wallet = await tx.wallets.create({
+          data: {
+            userId: user.id,
+          },
+        });
+
+        const account = await tx.account.createMany({
+          data: [
+            {
+              walletId: wallet.id,
+              type: 'FIAT', // Added missing 'type'
+              currency: 'NGN',
+              balance: 0,
+            },
+            {
+              walletId: wallet.id,
+              type: 'CRYPTO', // Added missing 'type'
+              currency: 'ETH',
+              address: '',
+            },
+          ],
+        });
+
+        return { user, token, wallet, account };
       });
 
       return {
@@ -115,6 +147,7 @@ export class AuthService {
 
   async loginUser(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
+
     const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       throw new RpcException({
@@ -122,11 +155,18 @@ export class AuthService {
         status: HttpStatus.NOT_FOUND,
       });
     }
+
+    if (!user.isActive) {
+      throw new RpcException({
+        message: 'User is not active',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
     const isPasswordValid = await compare(password, user.password);
     if (!isPasswordValid) {
       throw new RpcException({
         message: 'Invalid password',
-        status: HttpStatus.UNAUTHORIZED,
+        status: HttpStatus.BAD_REQUEST,
       });
     }
     return user;
@@ -170,4 +210,24 @@ export class AuthService {
   //     user,
   //   };
   // }
+
+  private normalizePhoneNumber(phone: string): string | null {
+  const cleaned = phone.trim().replace(/[\s\-().]/g, '');
+
+  let normalized: string;
+
+  if (cleaned.startsWith('0')) {
+    normalized = '+234' + cleaned.slice(1);
+  } else if (cleaned.startsWith('+')) {
+    normalized = cleaned;
+  } else {
+    normalized = '+234' + cleaned;
+  }
+
+  // ✅ Validate: must be + followed by digits only, and valid length
+  const isValid = /^\+\d{10,15}$/.test(normalized);
+  if (!isValid) return null;
+
+  return normalized;
+}
 }
