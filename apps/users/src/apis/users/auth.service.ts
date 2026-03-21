@@ -9,11 +9,13 @@ import {
   validatePassword,
 } from './utils/user.utils';
 import { PrismaService } from 'libs/database/src/prisma.service';
+import { TokensRepository } from './repository/token.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly tokensRepository: TokensRepository,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -66,22 +68,57 @@ export class AuthService {
 
     // return this.usersRepository.create(newUser);
 
-
-      try {
+    try {
       const result = await this.prisma.$transaction(async (tx) => {
-        const newUser = {
-      email,
-      password: hashed,
-      phoneNumber,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
-    };
+        const user = await tx.user.create({
+          data: {
+            email,
+            password: hashed,
+            phoneNumber,
+            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+          },
+        });
 
-    return this.usersRepository.create(newUser);
-      })
+        const token = await tx.tokens.create({
+          data: {
+            userId: user.id,
+            email: user.email,
+            code: code,
+            expiresAt: expiresAt,
+          },
+        });
+
+        return { user, token };
+      });
+
+      return {
+        user: {
+          id: result.user.id,
+          email: result.user.email,
+          phoneNumber: result.user.phoneNumber,
+        },
+        token: {
+          id: result.token.id,
+          token: result.token.code,
+        },
+      };
     } catch (error) {
-      
-    }
+      if (error.code === 'P2002') {
+        // Unique constraint violation (race condition)
+        const target = error.meta?.target;
+        if (target?.includes('phoneNumber')) {
+          throw new RpcException(
+            'Phone number already exists. Please try again.',
+          );
+        }
+        if (target?.includes('email')) {
+          throw new RpcException('Email already exists');
+        }
+        throw new RpcException('phoneNumber or email already exists');
+      }
 
+      throw error;
+    }
   }
 
   // async verifyUser(email: string) {
