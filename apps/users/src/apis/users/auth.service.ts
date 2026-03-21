@@ -10,6 +10,7 @@ import {
 } from './utils/user.utils';
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { TokensRepository } from './repository/token.repository';
+import moment from 'moment';
 
 @Injectable()
 export class AuthService {
@@ -58,15 +59,6 @@ export class AuthService {
     const hashed = await hash(password, 8);
     const code = generateSecureCode();
     const expiresAt = getExpiresAt();
-
-    // const newUser = {
-    //   email,
-    //   password: hashed,
-    //   phoneNumber,
-    //   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
-    // };
-
-    // return this.usersRepository.create(newUser);
 
     try {
       const result = await this.prisma.$transaction(async (tx) => {
@@ -121,17 +113,6 @@ export class AuthService {
     }
   }
 
-  // async verifyUser(email: string) {
-  //   const user = await this.usersRepository.findByEmail(email);
-  //   if (!user) {
-  //     throw new RpcException({
-  //       message: 'User not found',
-  //       status: HttpStatus.NOT_FOUND,
-  //     });
-  //   }
-  //   return user;
-  // }
-
   async loginUser(loginUserDto: LoginUserDto) {
     const { email, password } = loginUserDto;
     const user = await this.usersRepository.findByEmail(email);
@@ -154,4 +135,39 @@ export class AuthService {
   findAll() {
     return `This action returns all users`;
   }
+
+  //   async verification(code: number) {
+
+  //   const findUser = await this.tokensRepository.findTokenByCode(code);
+
+  //   if (!findUser) {
+
+  //          throw new RpcException({
+  //       message: 'Verification Code is not Found',
+  //       status: HttpStatus.NOT_FOUND,
+  //     });
+  //   }
+
+  //   if (moment().isAfter(findUser?.expiresAt)) {
+  //     await this.tokensRepository.deleteTokenCode(code);
+
+  //     throw new RpcException(
+  //      { message: 'Code has expired, please request another.',      status: HttpStatus.BAD_REQUEST,}
+  //     );
+  //   }
+
+  //   const verifyUser = await this.usersRepository.update(findUser?.userId, {
+  //     isActive: true,
+  //     status: Status.ACTIVE,
+  //   });
+
+  //   await this.tokensRepository.deleteTokenCode(code);
+
+  //   const { password, ...user } = verifyUser;
+
+  //   return {
+  //     message: 'User verified successfully',
+  //     user,
+  //   };
+  // }
 }
