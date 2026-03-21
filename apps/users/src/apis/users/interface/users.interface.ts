@@ -4,3 +4,10 @@ export interface IUsersRepository {
   phoneNumber: string;
   avatar?: string;
 }
+
+export interface TokenI {
+  userId: string;
+  email: string;
+  token: string;
+  expiresAt: Date;
+}
