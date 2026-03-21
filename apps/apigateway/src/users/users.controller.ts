@@ -1,0 +1,29 @@
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Res,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
+import type { Response } from 'express';
+
+@Controller('users')
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body() body: CreateUserDto) {
+    const user = await this.usersService.register(body);
+    return user;
+  }
+
+  @Post('login')
+  async login(@Body() body: LoginUserDto, @Res() res: Response) {
+    const user = await this.usersService.login(body);
+    return res.status(HttpStatus.OK).json(user);
+  }
+}

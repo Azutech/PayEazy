@@ -8,15 +8,21 @@ datasource db {
 
 model User {
   id              String   @id @default(uuid())
-  firstName       String
-  lastName        String
+  firstName       String?
+  lastName        String?
   email           String   @unique
-  dateOfBirth     DateTime
-  sex             String
-  phoneNumber     String
+  password        String   
+  dateOfBirth     DateTime?
+  age             Float?
+  sex             String?
+  avatar          String?
+  status          String?
+  phoneNumber     String   @unique
   isActive        Boolean  @default(false)
-  verified        Boolean @default(false)
   createdAt       DateTime @default(now())
+
+  wallets         Wallets[] 
+  tokens          Tokens[]
 }
 
 model AuditLog {
@@ -27,4 +33,57 @@ model AuditLog {
   subject        String?
   role           String?
   createdAt      DateTime @default(now())
+}
+
+model Tokens {
+  id        String    @id @default(uuid())
+  userId    String
+  email     String
+  code      Int?
+  expiresAt DateTime?
+  createdAt DateTime  @default(now())
+  token     String?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([email])
+}
+
+
+
+model Wallets {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  pinHash         String?  
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
+
+  account  Account[]  
+
+}
+
+model Account {
+  id        String   @id @default(uuid())
+  walletId  String
+  type      String   
+  currency  String   
+  balance   Decimal  @default(0)
+  address   String?  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  wallet    Wallets  @relation(fields: [walletId], references: [id], onDelete: Cascade)
+}
+
+model KycProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  level         Int      @default(0) // Tier system
+  status        String   // pending | verified | rejected
+  nin           String?
+  bvn           String?
+  utilityBillUrl String?
+  selfieUrl     String?
+  verifiedAt    DateTime?
+  createdAt     DateTime @default(now())
 }
