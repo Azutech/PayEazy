@@ -212,22 +212,22 @@ export class AuthService {
   // }
 
   private normalizePhoneNumber(phone: string): string | null {
-  const cleaned = phone.trim().replace(/[\s\-().]/g, '');
+    const cleaned = phone.trim().replace(/[\s\-().]/g, '');
 
-  let normalized: string;
+    let normalized: string;
 
-  if (cleaned.startsWith('0')) {
-    normalized = '+234' + cleaned.slice(1);
-  } else if (cleaned.startsWith('+')) {
-    normalized = cleaned;
-  } else {
-    normalized = '+234' + cleaned;
+    if (cleaned.startsWith('0')) {
+      normalized = '+234' + cleaned.slice(1);
+    } else if (cleaned.startsWith('+')) {
+      normalized = cleaned;
+    } else {
+      normalized = '+234' + cleaned;
+    }
+
+    // ✅ Validate: must be + followed by digits only, and valid length
+    const isValid = /^\+\d{10,15}$/.test(normalized);
+    if (!isValid) return null;
+
+    return normalized;
   }
-
-  // ✅ Validate: must be + followed by digits only, and valid length
-  const isValid = /^\+\d{10,15}$/.test(normalized);
-  if (!isValid) return null;
-
-  return normalized;
-}
 }
