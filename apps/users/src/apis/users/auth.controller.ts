@@ -12,4 +12,10 @@ export class AuthController {
     await this.authService.addUser(createUserDto);
     return { message: 'User registered successfully', user: createUserDto };
   }
+
+  @GrpcMethod('UserService', 'Verification') // ✅ matches proto: rpc Register
+  async verification(code: number) {
+    await this.authService.verification(code);
+    return { message: 'User verified successfully' };
+  }
 }

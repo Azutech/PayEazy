@@ -11,6 +11,9 @@ import {
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { TokensRepository } from './repository/token.repository';
 import { Currency, CurrencyType } from 'libs/enums/wallet.enum';
+import moment from 'moment';
+import { Status } from 'libs/enums/user.enum';
+
 
 @Injectable()
 export class AuthService {
@@ -177,40 +180,39 @@ export class AuthService {
     return `This action returns all users`;
   }
 
-  //   async verification(code: number) {
+  async verification(code: number) {
+    const findUser = await this.tokensRepository.findTokenByCode(code);
 
-  //   const findUser = await this.tokensRepository.findTokenByCode(code);
+    if (!findUser) {
+      throw new RpcException({
+        message: 'Verification Code is not Found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
 
-  //   if (!findUser) {
+    if (moment().isAfter(findUser?.expiresAt)) {
+      await this.tokensRepository.deleteTokenCode(code);
 
-  //          throw new RpcException({
-  //       message: 'Verification Code is not Found',
-  //       status: HttpStatus.NOT_FOUND,
-  //     });
-  //   }
+      throw new RpcException({
+        message: 'Code has expired, please request another.',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
 
-  //   if (moment().isAfter(findUser?.expiresAt)) {
-  //     await this.tokensRepository.deleteTokenCode(code);
+    const verifyUser = await this.usersRepository.update(findUser?.userId, {
+      isActive: true,
+      status: Status.ACTIVE,
+    });
 
-  //     throw new RpcException(
-  //      { message: 'Code has expired, please request another.',      status: HttpStatus.BAD_REQUEST,}
-  //     );
-  //   }
+    await this.tokensRepository.deleteTokenCode(code);
 
-  //   const verifyUser = await this.usersRepository.update(findUser?.userId, {
-  //     isActive: true,
-  //     status: Status.ACTIVE,
-  //   });
+    const { password, ...user } = verifyUser;
 
-  //   await this.tokensRepository.deleteTokenCode(code);
-
-  //   const { password, ...user } = verifyUser;
-
-  //   return {
-  //     message: 'User verified successfully',
-  //     user,
-  //   };
-  // }
+    return {
+      message: 'User verified successfully',
+      user,
+    };
+  }
 
   private normalizePhoneNumber(phone: string): string | null {
     const cleaned = phone.trim().replace(/[\s\-().]/g, '');
