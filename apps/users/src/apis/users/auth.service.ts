@@ -10,6 +10,7 @@ import {
 } from './utils/user.utils';
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { TokensRepository } from './repository/token.repository';
+import { Currency, CurrencyType } from 'libs/enums/wallet.enum';
 
 @Injectable()
 export class AuthService {
@@ -99,14 +100,14 @@ export class AuthService {
           data: [
             {
               walletId: wallet.id,
-              type: 'FIAT', // Added missing 'type'
-              currency: 'NGN',
+              type: CurrencyType.FIAT, // Added missing 'type'
+              currency: Currency.NGN,
               balance: 0,
             },
             {
               walletId: wallet.id,
-              type: 'CRYPTO', // Added missing 'type'
-              currency: 'ETH',
+              type: CurrencyType.CRYPTO, // Added missing 'type'
+              currency: Currency.ETH,
               address: '',
             },
           ],
