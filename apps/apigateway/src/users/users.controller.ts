@@ -26,4 +26,11 @@ export class UsersController {
     const user = await this.usersService.login(body);
     return res.status(HttpStatus.OK).json(user);
   }
+
+  @Post('verification')
+  @HttpCode(HttpStatus.OK)
+  async verification(@Body("code") code: number, @Res() res: Response) {
+    const user = await this.usersService.verification(code);
+    return user
+  }
 }

@@ -44,3 +44,11 @@ message LoginResponse {
   string accessToken = 3;
   User user = 4;
 }
+
+message VerificationRequest {
+  int32 code = 1;
+}
+
+message VerificationResponse {
+  string message = 1;
+}

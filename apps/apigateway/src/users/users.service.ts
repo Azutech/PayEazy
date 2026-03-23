@@ -8,11 +8,9 @@ import {
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, catchError, firstValueFrom } from 'rxjs';
 import { CreateUserDto } from 'libs/dtos/user.dto';
+import { UserServiceGrpc } from './interface/verifivation.interface';
 
-interface UserServiceGrpc {
-  register(data: CreateUserDto): Observable<any>; // ✅ camelCase of proto rpc Register
-  login(data: { email: string; password: string }): Observable<any>; // ✅ camelCase of proto rpc Login
-}
+
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -48,5 +46,18 @@ export class UsersService implements OnModuleInit {
         }),
       ),
     ); // ✅ camelCase
+  }
+
+  verification(code: number) {
+    return firstValueFrom(
+      this.userService.verification(code).pipe(
+        catchError((err) => {
+          throw new HttpException(
+            err.details || err.message,
+            HttpStatus.BAD_REQUEST,
+          );
+        }),
+      ),
+    );
   }
 }
