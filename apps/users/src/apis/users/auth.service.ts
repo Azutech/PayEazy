@@ -172,10 +172,43 @@ export class AuthService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all users`;
-  }
+async userDashboard(userId: string) {
+    const user = await this.usersRepository.findOne(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
 
+    const wallet = await this.prisma.wallets.findFirst({
+      where: { userId },
+    });
+
+    const accounts = await this.prisma.account.findMany({
+      where: { walletId: wallet?.id },
+    });
+
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        avatar: user.avatar,
+      },
+      wallet: {
+        id: wallet?.id,
+        createdAt: wallet?.createdAt,
+      },
+      accounts: accounts.map((account) => ({
+        id: account.id,
+        type: account.type,
+        currency: account.currency,
+        balance: account.balance,
+      })),
+    };
+  } 
+  
   async verification(code: number) {
     const findUser = await this.tokensRepository.findTokenByCode(code);
 
