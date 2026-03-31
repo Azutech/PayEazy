@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { Observable, catchError, firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import { CreateUserDto } from 'libs/dtos/user.dto';
 import { UserServiceGrpc } from './interface/users.interface';
 
@@ -58,4 +58,18 @@ export class UsersService implements OnModuleInit {
       ),
     );
   }
+
+  dashboard(userId: string) {
+    return firstValueFrom(
+      this.userService.dashboard(userId).pipe(
+        catchError((err) => {
+          throw new HttpException(
+            err.details || err.message,
+            HttpStatus.BAD_REQUEST,
+          );
+        }),
+      ),
+    );
+  }
+
 }

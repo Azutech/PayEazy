@@ -5,6 +5,8 @@ import {
   HttpCode,
   HttpStatus,
   Res,
+  Get,
+  Query
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
@@ -31,6 +33,12 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async verification(@Body('code') code: number, @Res() res: Response) {
     const user = await this.usersService.verification(code);
+    return user;
+  }
+
+  @Get('dashboard')
+  async dashboard(@Query('userId') userId: string, @Res() res: Response) {
+    const user = await this.usersService.dashboard(userId);
     return user;
   }
 }
