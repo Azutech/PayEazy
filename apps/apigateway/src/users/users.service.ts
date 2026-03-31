@@ -10,8 +10,6 @@ import { Observable, catchError, firstValueFrom } from 'rxjs';
 import { CreateUserDto } from 'libs/dtos/user.dto';
 import { UserServiceGrpc } from './interface/verifivation.interface';
 
-
-
 @Injectable()
 export class UsersService implements OnModuleInit {
   private userService: UserServiceGrpc;

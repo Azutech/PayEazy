@@ -24,13 +24,13 @@ export class UsersController {
   @Post('login')
   async login(@Body() body: LoginUserDto, @Res() res: Response) {
     const user = await this.usersService.login(body);
-    return res.status(HttpStatus.OK).json(user);
+    return user;
   }
 
   @Post('verification')
   @HttpCode(HttpStatus.OK)
-  async verification(@Body("code") code: number, @Res() res: Response) {
+  async verification(@Body('code') code: number, @Res() res: Response) {
     const user = await this.usersService.verification(code);
-    return user
+    return user;
   }
 }

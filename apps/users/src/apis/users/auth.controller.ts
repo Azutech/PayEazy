@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../../../../../libs/dtos/user.dto';
+import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
 
 @Controller()
 export class AuthController {
@@ -17,5 +17,11 @@ export class AuthController {
   async verification(code: number) {
     await this.authService.verification(code);
     return { message: 'User verified successfully' };
+  }
+
+  @GrpcMethod('UserService', 'Login') // ✅ matches proto: rpc Register
+  async login(loginUserDto: LoginUserDto) {
+    await this.authService.loginUser(loginUserDto);
+    return { message: 'User login successfully' };
   }
 }

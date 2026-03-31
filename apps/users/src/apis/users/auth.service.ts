@@ -14,7 +14,6 @@ import { Currency, CurrencyType } from 'libs/enums/wallet.enum';
 import moment from 'moment';
 import { Status } from 'libs/enums/user.enum';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -125,10 +124,7 @@ export class AuthService {
           email: result.user.email,
           phoneNumber: result.user.phoneNumber,
         },
-        token: {
-          id: result.token.id,
-          token: result.token.code,
-        },
+        token: result.token.code,
       };
     } catch (error) {
       if (error.code === 'P2002') {
