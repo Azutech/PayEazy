@@ -13,11 +13,15 @@ import { TokensRepository } from './repository/token.repository';
 import { Currency, CurrencyType } from 'libs/enums/wallet.enum';
 import moment from 'moment';
 import { Status } from 'libs/enums/user.enum';
+import { AccountRepository } from '../wallets/accounts.repository';
+import { WalletRepository } from '../wallets/wallet.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly accountRepository: AccountRepository,
+    private readonly walletRepository: WalletRepository,
     private readonly tokensRepository: TokensRepository,
     private readonly prisma: PrismaService,
   ) {}
@@ -181,13 +185,9 @@ async userDashboard(userId: string) {
       });
     }
 
-    const wallet = await this.prisma.wallets.findFirst({
-      where: { userId },
-    });
+    const wallet = await this.walletRepository.viewWallet(userId);
 
-    const accounts = await this.prisma.account.findMany({
-      where: { walletId: wallet?.id },
-    });
+    const accounts = await this.accountRepository.viewWalletAccount(String(wallet?.id));
 
     return {
       user: {
@@ -208,7 +208,7 @@ async userDashboard(userId: string) {
       })),
     };
   } 
-  
+
   async verification(code: number) {
     const findUser = await this.tokensRepository.findTokenByCode(code);
 
