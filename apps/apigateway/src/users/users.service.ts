@@ -8,7 +8,7 @@ import {
 import type { ClientGrpc } from '@nestjs/microservices';
 import { Observable, catchError, firstValueFrom } from 'rxjs';
 import { CreateUserDto } from 'libs/dtos/user.dto';
-import { UserServiceGrpc } from './interface/verifivation.interface';
+import { UserServiceGrpc } from './interface/users.interface';
 
 @Injectable()
 export class UsersService implements OnModuleInit {

@@ -52,3 +52,28 @@ message VerificationRequest {
 message VerificationResponse {
   string message = 1;
 }
+
+message DashboardRequest {
+  string user_id = 1;
+}
+
+message WalletAccount {
+  string id = 1;
+  string type = 2;
+  string currency = 3;
+  double balance = 4;
+}
+
+message DashboardData {
+  string id = 1;
+  string email = 2;
+  string phone_number = 3;
+  string avatar = 4;
+  string wallet_id = 5;
+  repeated WalletAccount wallets_accounts = 6;
+}
+
+message DashboardResponse {
+  string message = 1;
+  DashboardData data = 2;
+}

@@ -191,18 +191,20 @@ export class AuthService {
       String(wallet?.id),
     );
 
+    const walletsAccounts = accounts.map((account) => ({
+      id: account.id,
+      type: account.type,
+      currency: account.currency,
+      balance: account.balance,
+    }));
+
     return {
       id: user.id,
       email: user.email,
       phoneNumber: user.phoneNumber,
       avatar: user.avatar,
       walletId: wallet?.id,
-      accounts: accounts.map((account) => ({
-        id: account.id,
-        type: account.type,
-        currency: account.currency,
-        balance: account.balance,
-      })),
+      walletsAccounts,
     };
   }
 
