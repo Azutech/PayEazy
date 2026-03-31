@@ -176,7 +176,7 @@ export class AuthService {
     return user;
   }
 
-async userDashboard(userId: string) {
+  async userDashboard(userId: string) {
     const user = await this.usersRepository.findOne(userId);
     if (!user) {
       throw new RpcException({
@@ -187,19 +187,16 @@ async userDashboard(userId: string) {
 
     const wallet = await this.walletRepository.viewWallet(userId);
 
-    const accounts = await this.accountRepository.viewWalletAccount(String(wallet?.id));
+    const accounts = await this.accountRepository.viewWalletAccount(
+      String(wallet?.id),
+    );
 
     return {
-      user: {
-        id: user.id,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        avatar: user.avatar,
-      },
-      wallet: {
-        id: wallet?.id,
-        createdAt: wallet?.createdAt,
-      },
+      id: user.id,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      avatar: user.avatar,
+      walletId: wallet?.id,
       accounts: accounts.map((account) => ({
         id: account.id,
         type: account.type,
@@ -207,7 +204,7 @@ async userDashboard(userId: string) {
         balance: account.balance,
       })),
     };
-  } 
+  }
 
   async verification(code: number) {
     const findUser = await this.tokensRepository.findTokenByCode(code);

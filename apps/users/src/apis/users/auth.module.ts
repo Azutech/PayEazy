@@ -8,6 +8,12 @@ import { AccountRepository } from '../wallets/accounts.repository';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UsersRepository, TokensRepository, AccountRepository, WalletRepository],
+  providers: [
+    AuthService,
+    UsersRepository,
+    TokensRepository,
+    AccountRepository,
+    WalletRepository,
+  ],
 })
 export class AuthModule {}

@@ -28,6 +28,9 @@ export class AuthController {
   @GrpcMethod('UserService', 'Dashboard') // ✅ matches proto: rpc Register
   async dashboard(userId: string) {
     const dashboardData = await this.authService.userDashboard(userId);
-    return { message: 'User dashboard data retrieved successfully', data: dashboardData };
+    return {
+      message: 'User dashboard data retrieved successfully',
+      data: dashboardData,
+    };
   }
 }
