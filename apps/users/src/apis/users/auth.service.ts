@@ -10,11 +10,18 @@ import {
 } from './utils/user.utils';
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { TokensRepository } from './repository/token.repository';
+import { Currency, CurrencyType } from 'libs/enums/wallet.enum';
+import moment from 'moment';
+import { Status } from 'libs/enums/user.enum';
+import { AccountRepository } from '../wallets/accounts.repository';
+import { WalletRepository } from '../wallets/wallet.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly accountRepository: AccountRepository,
+    private readonly walletRepository: WalletRepository,
     private readonly tokensRepository: TokensRepository,
     private readonly prisma: PrismaService,
   ) {}
@@ -99,14 +106,14 @@ export class AuthService {
           data: [
             {
               walletId: wallet.id,
-              type: 'FIAT', // Added missing 'type'
-              currency: 'NGN',
+              type: CurrencyType.FIAT, // Added missing 'type'
+              currency: Currency.NGN,
               balance: 0,
             },
             {
               walletId: wallet.id,
-              type: 'CRYPTO', // Added missing 'type'
-              currency: 'ETH',
+              type: CurrencyType.CRYPTO, // Added missing 'type'
+              currency: Currency.ETH,
               address: '',
             },
           ],
@@ -121,10 +128,7 @@ export class AuthService {
           email: result.user.email,
           phoneNumber: result.user.phoneNumber,
         },
-        token: {
-          id: result.token.id,
-          token: result.token.code,
-        },
+        token: result.token.code,
       };
     } catch (error) {
       if (error.code === 'P2002') {
@@ -172,44 +176,71 @@ export class AuthService {
     return user;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async userDashboard(userId: string) {
+    const user = await this.usersRepository.findOne(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+
+    const wallet = await this.walletRepository.viewWallet(userId);
+
+    const accounts = await this.accountRepository.viewWalletAccount(
+      String(wallet?.id),
+    );
+
+    const walletsAccounts = accounts.map((account) => ({
+      id: account.id,
+      type: account.type,
+      currency: account.currency,
+      balance: account.balance,
+    }));
+
+    return {
+      id: user.id,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      avatar: user.avatar,
+      walletId: wallet?.id,
+      walletsAccounts,
+    };
   }
 
-  //   async verification(code: number) {
+  async verification(code: number) {
+    const findUser = await this.tokensRepository.findTokenByCode(code);
 
-  //   const findUser = await this.tokensRepository.findTokenByCode(code);
+    if (!findUser) {
+      throw new RpcException({
+        message: 'Verification Code is not Found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
 
-  //   if (!findUser) {
+    if (moment().isAfter(findUser?.expiresAt)) {
+      await this.tokensRepository.deleteTokenCode(code);
 
-  //          throw new RpcException({
-  //       message: 'Verification Code is not Found',
-  //       status: HttpStatus.NOT_FOUND,
-  //     });
-  //   }
+      throw new RpcException({
+        message: 'Code has expired, please request another.',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
 
-  //   if (moment().isAfter(findUser?.expiresAt)) {
-  //     await this.tokensRepository.deleteTokenCode(code);
+    const verifyUser = await this.usersRepository.update(findUser?.userId, {
+      isActive: true,
+      status: Status.ACTIVE,
+    });
 
-  //     throw new RpcException(
-  //      { message: 'Code has expired, please request another.',      status: HttpStatus.BAD_REQUEST,}
-  //     );
-  //   }
+    await this.tokensRepository.deleteTokenCode(code);
 
-  //   const verifyUser = await this.usersRepository.update(findUser?.userId, {
-  //     isActive: true,
-  //     status: Status.ACTIVE,
-  //   });
+    const { password, ...user } = verifyUser;
 
-  //   await this.tokensRepository.deleteTokenCode(code);
-
-  //   const { password, ...user } = verifyUser;
-
-  //   return {
-  //     message: 'User verified successfully',
-  //     user,
-  //   };
-  // }
+    return {
+      message: 'User verified successfully',
+      user,
+    };
+  }
 
   private normalizePhoneNumber(phone: string): string | null {
     const cleaned = phone.trim().replace(/[\s\-().]/g, '');

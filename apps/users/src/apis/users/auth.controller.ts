@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../../../../../libs/dtos/user.dto';
+import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
 
 @Controller()
 export class AuthController {
@@ -11,5 +11,26 @@ export class AuthController {
   async register(createUserDto: CreateUserDto) {
     await this.authService.addUser(createUserDto);
     return { message: 'User registered successfully', user: createUserDto };
+  }
+
+  @GrpcMethod('UserService', 'Verification') // ✅ matches proto: rpc Register
+  async verification(code: number) {
+    await this.authService.verification(code);
+    return { message: 'User verified successfully' };
+  }
+
+  @GrpcMethod('UserService', 'Login') // ✅ matches proto: rpc Register
+  async login(loginUserDto: LoginUserDto) {
+    await this.authService.loginUser(loginUserDto);
+    return { message: 'User login successfully' };
+  }
+
+  @GrpcMethod('UserService', 'Dashboard') // ✅ matches proto: rpc Register
+  async dashboard(userId: string) {
+    const dashboardData = await this.authService.userDashboard(userId);
+    return {
+      message: 'User dashboard data retrieved successfully',
+      data: dashboardData,
+    };
   }
 }

@@ -32,6 +32,7 @@ message RegisterRequest {
 message RegisterResponse {
     string message = 1;
     User user = 2;
+    string token = 3; 
 }
 
 message LoginRequest {
@@ -40,7 +41,39 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string message = 2;
-  string accessToken = 3;
-  User user = 4;
+  string message = 1;
+
+}
+
+message VerificationRequest {
+  int32 code = 1;
+}
+
+message VerificationResponse {
+  string message = 1;
+}
+
+message DashboardRequest {
+  string userId = 1;
+}
+
+message WalletAccount {
+  string id = 1;
+  string type = 2;
+  string currency = 3;
+  double balance = 4;
+}
+
+message DashboardData {
+  string id = 1;
+  string email = 2;
+  string phoneNumber = 3;
+  string avatar = 4;
+  string walletId = 5;
+  repeated WalletAccount wallets_accounts = 6;
+}
+
+message DashboardResponse {
+  string message = 1;
+  DashboardData data = 2;
 }
