@@ -43,7 +43,7 @@ export class UsersService implements OnModuleInit {
           );
         }),
       ),
-    ); // ✅ camelCase
+    ); 
   }
 
   verification(code: number) {

@@ -54,7 +54,7 @@ message VerificationResponse {
 }
 
 message DashboardRequest {
-  string user_id = 1;
+  string userId = 1;
 }
 
 message WalletAccount {
@@ -67,9 +67,9 @@ message WalletAccount {
 message DashboardData {
   string id = 1;
   string email = 2;
-  string phone_number = 3;
+  string phoneNumber = 3;
   string avatar = 4;
-  string wallet_id = 5;
+  string walletId = 5;
   repeated WalletAccount wallets_accounts = 6;
 }
 
