@@ -9,8 +9,12 @@ export class AuthController {
 
   @GrpcMethod('UserService', 'Register') // ✅ matches proto: rpc Register
   async register(createUserDto: CreateUserDto) {
-    await this.authService.addUser(createUserDto);
-    return { message: 'User registered successfully', user: createUserDto };
+    const result = await this.authService.addUser(createUserDto);
+    return {
+      message: 'User registered successfully',
+      user: result.user,
+      token: result.token,
+    };
   }
 
   @GrpcMethod('UserService', 'Verification') // ✅ matches proto: rpc Register
