@@ -25,7 +25,7 @@ export class AuthController {
   @GrpcMethod('UserService', 'Verification')
   async verification(data: { code: number }) {
     const result = await this.authService.verification(data.code);
-    return { message: 'User verification successful' };
+    return { message: 'User verification successful', user: result.user };
   }
 
   @GrpcMethod('UserService', 'Login') 

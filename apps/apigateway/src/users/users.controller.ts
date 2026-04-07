@@ -31,7 +31,7 @@ export class UsersController {
 
   @Post('verification')
   @HttpCode(HttpStatus.OK)
-  async verification(@Body('code') code: number, @Res() res: Response) {
+  async verification(@Body('code') code: number, ) {
     const user = await this.usersService.verification(code);
     return user;
   }

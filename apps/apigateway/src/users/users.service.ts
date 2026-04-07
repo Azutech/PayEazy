@@ -47,7 +47,6 @@ export class UsersService implements OnModuleInit {
   }
 
   verification(code: number) {
-    console.log(code);
     return firstValueFrom(
       this.userService.verification({ code }).pipe(
         catchError((err) => {
