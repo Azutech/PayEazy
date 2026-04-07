@@ -24,16 +24,17 @@ export class AuthController {
 
   @GrpcMethod('UserService', 'Verification')
   async verification(data: { code: number }) {
-    return this.authService.verification(data.code);
+    const result = await this.authService.verification(data.code);
+    return { message: 'User verification successful' };
   }
 
-  @GrpcMethod('UserService', 'Login') // ✅ matches proto: rpc Register
+  @GrpcMethod('UserService', 'Login') 
   async login(loginUserDto: LoginUserDto) {
     await this.authService.loginUser(loginUserDto);
     return { message: 'User login successfully' };
   }
 
-  @GrpcMethod('UserService', 'Dashboard') // ✅ matches proto: rpc Register
+  @GrpcMethod('UserService', 'Dashboard') 
   async dashboard(userId: string) {
     const dashboardData = await this.authService.userDashboard(userId);
     return {

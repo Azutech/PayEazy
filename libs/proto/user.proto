@@ -6,6 +6,7 @@ package user;
 service UserService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
+  rpc ResendVerification (ResendVerificationRequest) returns (ResendVerificationResponse);
   rpc Verification (VerificationRequest) returns (VerificationResponse);
   rpc Dashboard (DashboardRequest) returns (DashboardResponse);
 }

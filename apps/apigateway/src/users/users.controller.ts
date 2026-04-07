@@ -38,7 +38,7 @@ export class UsersController {
 
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
-  async resendVerification(@Body('email') email: string, @Res() res: Response) {
+  async resendVerification(@Body('email') email: string,) {
     const user = await this.usersService.resendVerification(email);
     return user;
   }

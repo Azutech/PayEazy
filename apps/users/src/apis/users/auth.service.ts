@@ -237,6 +237,8 @@ export class AuthService {
       });
     }
 
+    console.log(findUser?.expiresAt)
+
     if (moment().isAfter(findUser?.expiresAt)) {
       await this.tokensRepository.deleteTokenCode(code);
 
