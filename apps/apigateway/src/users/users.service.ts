@@ -43,12 +43,26 @@ export class UsersService implements OnModuleInit {
           );
         }),
       ),
-    ); 
+    );
   }
 
   verification(code: number) {
+    console.log(code);
     return firstValueFrom(
-      this.userService.verification(code).pipe(
+      this.userService.verification({ code }).pipe(
+        catchError((err) => {
+          throw new HttpException(
+            err.details || err.message,
+            HttpStatus.BAD_REQUEST,
+          );
+        }),
+      ),
+    );
+  }
+
+  resendVerification(email: string) {
+    return firstValueFrom(
+      this.userService.resendVerification({ email }).pipe(
         catchError((err) => {
           throw new HttpException(
             err.details || err.message,
@@ -71,5 +85,4 @@ export class UsersService implements OnModuleInit {
       ),
     );
   }
-
 }

@@ -208,6 +208,25 @@ export class AuthService {
     };
   }
 
+  async resendVerification(email: string) {
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found',
+        status: HttpStatus.NOT_FOUND,
+      });
+    }
+    const code = generateSecureCode();
+    const expiresAt = getExpiresAt();
+    const token = await this.tokensRepository.createToken({
+      userId: user.id,
+      email: user.email,
+      code: code,
+      expiresAt: expiresAt,
+    });
+    return { token: token.code };
+  }
+
   async verification(code: number) {
     const findUser = await this.tokensRepository.findTokenByCode(code);
 

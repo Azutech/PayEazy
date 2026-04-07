@@ -6,6 +6,8 @@ package user;
 service UserService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
+  rpc Verification (VerificationRequest) returns (VerificationResponse);
+  rpc Dashboard (DashboardRequest) returns (DashboardResponse);
 }
 
 message User {
@@ -51,6 +53,16 @@ message VerificationRequest {
 
 message VerificationResponse {
   string message = 1;
+  User user = 2;
+}
+message ResendVerificationRequest {
+  string email = 1;
+}
+
+message ResendVerificationResponse {
+  string message = 1;
+  string token = 2; 
+  User user = 3;
 }
 
 message DashboardRequest {

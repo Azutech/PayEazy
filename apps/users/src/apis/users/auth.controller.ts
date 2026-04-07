@@ -17,10 +17,14 @@ export class AuthController {
     };
   }
 
-  @GrpcMethod('UserService', 'Verification') // ✅ matches proto: rpc Register
-  async verification(code: number) {
-    await this.authService.verification(code);
-    return { message: 'User verified successfully' };
+  @GrpcMethod('UserService', 'ResendVerification')
+  async resendVerification(data: { email: string }) {
+    return this.authService.resendVerification(data.email);
+  }
+
+  @GrpcMethod('UserService', 'Verification')
+  async verification(data: { code: number }) {
+    return this.authService.verification(data.code);
   }
 
   @GrpcMethod('UserService', 'Login') // ✅ matches proto: rpc Register

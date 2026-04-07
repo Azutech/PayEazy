@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Res,
   Get,
-  Query
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, LoginUserDto } from 'libs/dtos/user.dto';
@@ -33,6 +33,13 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async verification(@Body('code') code: number, @Res() res: Response) {
     const user = await this.usersService.verification(code);
+    return user;
+  }
+
+  @Post('resend-verification')
+  @HttpCode(HttpStatus.OK)
+  async resendVerification(@Body('email') email: string, @Res() res: Response) {
+    const user = await this.usersService.resendVerification(email);
     return user;
   }
 

@@ -11,3 +11,10 @@ export interface TokenI {
   token: string;
   expiresAt: Date;
 }
+
+export interface CodeI {
+  userId: string;
+  email: string;
+  code: number;
+  expiresAt: Date;
+}

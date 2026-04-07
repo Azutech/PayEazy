@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'libs/database/src/prisma.service';
 import { Tokens } from '@prisma/client';
-import { TokenI } from '../interface/users.interface';
+import { CodeI, TokenI } from '../interface/users.interface';
 
 @Injectable()
 export class TokensRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createToken(
-    userId: string,
-    email: string,
-    code: number,
-    expiresAt: Date,
-  ): Promise<Tokens> {
+  async createToken(data: CodeI): Promise<Tokens> {
     return this.prisma.tokens.create({
-      data: { userId, email, code, expiresAt },
+      data: {
+        userId: data.userId,
+        email: data.email,
+        code: data.code,
+        expiresAt: data.expiresAt,
+      },
     });
   }
 
