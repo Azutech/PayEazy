@@ -185,7 +185,11 @@ export class AuthService {
       });
     }
 
+
+
     const wallet = await this.walletRepository.viewWallet(userId);
+
+
 
     const accounts = await this.accountRepository.viewWalletAccount(
       String(wallet?.id),
@@ -237,7 +241,6 @@ export class AuthService {
       });
     }
 
-    console.log(findUser?.expiresAt)
 
     if (moment().isAfter(findUser?.expiresAt)) {
       await this.tokensRepository.deleteTokenCode(code);

@@ -44,7 +44,7 @@ export class UsersController {
   }
 
   @Get('dashboard')
-  async dashboard(@Query('userId') userId: string, @Res() res: Response) {
+  async dashboard(@Query('userId') userId: string) {
     const user = await this.usersService.dashboard(userId);
     return user;
   }

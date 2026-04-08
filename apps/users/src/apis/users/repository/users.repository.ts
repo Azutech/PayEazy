@@ -37,7 +37,7 @@ export class UsersRepository {
   }
 
   async findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findFirst({ where: { id } });
   }
 
   async update(id: string, data: any) {
