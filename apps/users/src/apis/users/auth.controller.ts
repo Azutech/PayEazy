@@ -28,13 +28,13 @@ export class AuthController {
     return { message: 'User verification successful', user: result.user };
   }
 
-  @GrpcMethod('UserService', 'Login') 
+  @GrpcMethod('UserService', 'Login')
   async login(loginUserDto: LoginUserDto) {
     await this.authService.loginUser(loginUserDto);
     return { message: 'User login successfully' };
   }
 
-  @GrpcMethod('UserService', 'Dashboard') 
+  @GrpcMethod('UserService', 'Dashboard')
   async dashboard(userId: string) {
     const dashboardData = await this.authService.userDashboard(userId);
     return {

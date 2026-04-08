@@ -31,14 +31,14 @@ export class UsersController {
 
   @Post('verification')
   @HttpCode(HttpStatus.OK)
-  async verification(@Body('code') code: number, ) {
+  async verification(@Body('code') code: number) {
     const user = await this.usersService.verification(code);
     return user;
   }
 
   @Post('resend-verification')
   @HttpCode(HttpStatus.OK)
-  async resendVerification(@Body('email') email: string,) {
+  async resendVerification(@Body('email') email: string) {
     const user = await this.usersService.resendVerification(email);
     return user;
   }
